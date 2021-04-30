@@ -2,6 +2,8 @@
 
 auto repay before too close to liquidate
 
+### It is not the perfect way to avoid liquidate. Such as API instability issue can break this repay system
+
 ## how to use?
 
 1. ### set option.txt
@@ -12,7 +14,7 @@ auto repay before too close to liquidate
             "target_percent": "80%", 
             "trigger_percent": "90%",
             "get_UST_option": ["aUST", "MIR LP", "ANC LP", "mAAPL LP"],
-            "instant_burn": "off"
+            "instant_burn": "off",
             "max_premium_rate": ""
         }
    
