@@ -1,0 +1,7 @@
+{
+    "target_percent" : "80%",
+    "trigger_percent" : 0.9,
+    "get_UST_option" : ["aUST","MIR LP", "ANC LP", "mAAPL LP", "mCOIN LP"],
+    "instant_burn" : "off",
+    "max_premium_rate": ""
+}

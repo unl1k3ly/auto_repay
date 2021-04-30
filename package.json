@@ -1,0 +1,32 @@
+{
+  "name": "auto_repay",
+  "version": "1.0.0",
+  "description": "auto repaying program before too close to liquidate on anchor protocol",
+  "main": "index.js",
+  "dependencies": {
+    "node-fetch": "^2.6.1",
+    "fs": "0.0.1-security",
+    "@terra-money/terra.js": "^1.0.1",
+    "dotenv": "^8.2.0",
+    "moment": "2.29.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ALPAC-4/auto_repay.git"
+  },
+  "keywords": [
+    "anchor",
+    "terra"
+  ],
+  "author": "ALPAC4",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ALPAC-4/auto_repay/issues"
+  },
+  "homepage": "https://github.com/ALPAC-4/auto_repay#readme"
+}
