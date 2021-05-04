@@ -549,15 +549,15 @@ async function main(){
                 }
                 await sleep(1000)
                 UST_remain = await fetchAPI.ust_balance(myAddress)
-                if(Math.min(UST_remain - 2000000, total_needed_amount) > 0){
-                    await repayHandler.repay(Math.min(UST_remain - 2000000, total_needed_amount)) //2UST for gas fee
+                if(Math.min(UST_remain - 3000000, total_needed_amount) > 0){
+                    await repayHandler.repay(Math.min(UST_remain - 3000000, total_needed_amount)) //3UST for gas fee
                     nowPercent = await update_state()
                 }
                 
                 if (nowPercent > trigger_percent && instant_burn == "on"){ //if nowPercent still obove trigger_percent do instant burn
                     await instant_brun_process(percentNow)
                     UST_remain = await fetchAPI.ust_balance(myAddress)
-                    await repayHandler.repay(UST_remain - 2000000)
+                    await repayHandler.repay(UST_remain - 3000000)
                     nowPercent = await update_state()
                 }
             }else if(nowPercent < belowTrigger){
