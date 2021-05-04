@@ -1,4 +1,4 @@
-const { MnemonicKey, LCDClient, MsgExecuteContract, MsgSwap, Wallet, Coin, Coins} = require('@terra-money/terra.js');
+const { MnemonicKey, LCDClient, MsgExecuteContract, MsgSwap, Wallet, Coin, Coins, StdFee} = require('@terra-money/terra.js');
 const fetchAPI = require('./fetchAPI')
 const fs = require('fs')
 const moment = require('moment');
@@ -30,16 +30,20 @@ class Repay{
         });
         const lcd = new LCDClient({
             URL: 'https://lcd.terra.dev',
-            chainID: 'columbus-4',
-            gasAdjustment: '1.4',
-            gasPrices: '0.15uusd'
+            chainID: 'columbus-4'
         });
         this.wallet = new Wallet(lcd, key);
     }
 
-    async execute(msgs){
+    async execute(msgs, type = 'else'){
+        let fee = new StdFee(666666, '100000uusd')
+        
+        if(type == 'ANC'){
+            fee = new StdFee(1000000, '250000uusd')
+        }
+
         try{
-            const tx = await this.wallet.createAndSignTx({msgs});
+            const tx = await this.wallet.createAndSignTx({msgs, fee});
             const result = await this.wallet.lcd.tx.broadcastSync(tx);    
             await this.pollingTx(result.txhash)
             console.log('Transaction Completed\n')
@@ -76,7 +80,7 @@ class Repay{
             },
             coins
         )
-        await this.execute([repay]);
+        await this.execute([repay], 'ANC');
     }
 
     
@@ -95,7 +99,7 @@ class Repay{
             },
             new Coins
         )
-        await this.execute([withdraw]);
+        await this.execute([withdraw], 'ANC');
     }
 
     
@@ -196,7 +200,7 @@ class Repay{
             },
             new Coins
         )
-        await this.execute([unlock, withdraw])
+        await this.execute([unlock, withdraw], 'ANC')
     }
 
     //2. instant brun (bluna to luna)
@@ -253,9 +257,7 @@ class Repay{
                 send:{
                     contract: custody,
                     amount: provide_amount.toString(),
-                    mag:{
-                        deposit_collateral:{}
-                    }
+                    msg: "eyJkZXBvc2l0X2NvbGxhdGVyYWwiOnt9fQ=="
                 }
             },
             new Coins
@@ -272,7 +274,7 @@ class Repay{
             },
             new Coins
         )
-        await this.execute([deposit, lock])
+        await this.execute([deposit, lock], 'ANC')
     }
 
     async borrow_ust(ust_amount){
@@ -287,7 +289,7 @@ class Repay{
             },
             new Coins
         )
-        await this.execute([borrow])
+        await this.execute([borrow], 'ANC')
     }
 }
 
