@@ -150,3 +150,15 @@ exports.ust_receive_amount = async function(swapamount){
     let receive = await getAPI('market/swap?offer_coin=' + swapamount.toString() + 'uluna&ask_denom=uusd')
     return receive.result.amount
 }
+
+exports.tax_amount = async function(ust_amount){
+    let tax_rate = await getAPI('treasury/tax_rate')
+    let tax_cap = await getAPI('treasury/tax_cap/uusd')
+    return Math.min(parseInt(tax_cap.result), parseInt(ust_amount * parseFloat(tax_rate.result)))
+}
+
+
+exports.tax_cap = async function(ust_amount){
+    let tax_cap = await getAPI('treasury/tax_cap/uusd')
+    return parseInt(tax_cap.result)
+}

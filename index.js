@@ -40,6 +40,10 @@ class Repay{
         
         if(type == 'ANC'){
             fee = new StdFee(1000000, '250000uusd')
+        }else if(type == 'repay'){
+            let tax = await fetchAPI.tax_cap() //just use tax_cap
+
+            fee = new StdFee(1000000, (250000 + tax).toString() + 'uusd') 
         }
 
         try{
@@ -80,7 +84,7 @@ class Repay{
             },
             coins
         )
-        await this.execute([repay], 'ANC');
+        await this.execute([repay], 'repay');
     }
 
     
