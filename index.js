@@ -6,7 +6,7 @@ require('dotenv').config();
 
 const MNEMONIC = process.env.MNEMONIC != '' ? process.env.MNEMONIC : process.argv[2];
 const COIN_TYPE = 330;
-//contracts address
+//contract addresses
 const market = 'terra1sepfj7s0aeg5967uxnfk4thzlerrsktkpelm5s'
 const overseer = 'terra1tmnqgvg567ypvsvk6rwsga3srp7e3lg6u0elp8'
 const bLUNA_token = 'terra1kc87mu460fwkqte29rquh4hc20m54fxwtsx7gp'
@@ -207,9 +207,9 @@ class Repay{
         await this.execute([unlock, withdraw], 'ANC')
     }
 
-    //2. instant brun (bluna to luna)
-    async instant_brun(burnamount, max_premium_rate){      
-        console.log('Inastant Burning...')
+    //2. instant burn (bluna to luna)
+    async instant_burn(burnamount, max_premium_rate){      
+        console.log('Instant Burning...')
         let inmsg = Buffer.from('{"swap":{"belief_price":"'+ (1+max_premium_rate).toString() + '","max_spread":"0"}}').toString('base64')
         let swap = new MsgExecuteContract(
             this.wallet.key.accAddress,
@@ -374,7 +374,7 @@ async function mAsset_LP_process(insufficientUST, symbol){
 // Warning! Instant_burn is not a good option. In some conditions liquidation could be a better option
 // Instant burn process is not a process that make a nowPercent to the targetPrecent.
 // The process will drag down a nowPercent just 5~5.2% 
-async function instant_brun_process(nowPercent){
+async function instant_burn_process(nowPercent){
     let percent_diff = Math.min(0.05, 0.985-nowPercent) //percent diff after withdraw bLUNA
     let provided_bLUNA = await fetchAPI.provided_bLUNA_amount(myAddress)
     let withdraw_amount = parseInt(provided_bLUNA-provided_bLUNA/(1+percent_diff/nowPercent))
@@ -382,7 +382,7 @@ async function instant_brun_process(nowPercent){
     
     await repayHandler.withdraw_bLUNA(withdraw_amount)
     
-    await repayHandler.instant_brun(withdraw_amount, max_premium_rate)
+    await repayHandler.instant_burn(withdraw_amount, max_premium_rate)
     
     let after_luna_balance = await fetchAPI.luna_balance(myAddress)
     
@@ -555,7 +555,7 @@ async function main(){
                 }
                 
                 if (nowPercent > trigger_percent && instant_burn == "on"){ //if nowPercent still obove trigger_percent do instant burn
-                    await instant_brun_process(percentNow)
+                    await instant_burn_process(percentNow)
                     UST_remain = await fetchAPI.ust_balance(myAddress)
                     await repayHandler.repay(UST_remain - 3000000)
                     nowPercent = await update_state()
