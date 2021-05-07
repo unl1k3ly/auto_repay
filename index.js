@@ -3,20 +3,56 @@ const fetchAPI = require('./fetchAPI')
 const fs = require('fs')
 const moment = require('moment');
 require('dotenv').config();
+const fetch = require('node-fetch');
+
 
 const MNEMONIC = process.env.MNEMONIC != '' ? process.env.MNEMONIC : process.argv[2];
 const COIN_TYPE = 330;
-//contract addresses
-const market = 'terra1sepfj7s0aeg5967uxnfk4thzlerrsktkpelm5s'
-const overseer = 'terra1tmnqgvg567ypvsvk6rwsga3srp7e3lg6u0elp8'
-const bLUNA_token = 'terra1kc87mu460fwkqte29rquh4hc20m54fxwtsx7gp'
-const custody = 'terra1ptjp2vfjrwh0j0faj9r6katm640kgjxnwwq9kn'
-const aUST = 'terra1hzh9vpxhsk8253se0vv5jj6etdvxu3nv8z07zu'
-const ANC_token = 'terra1897an2xux840p9lrh6py3ryankc6mspw49xse3'
-const ANC_LP = 'terra1gecs98vcuktyfkrve9czrpgtg0m3aq586x6gzm'
-const ANC_pool = 'terra1gm5p3ner9x9xpwugn9sp6gvhd0lwrtkyrecdn3'
+
+const SLACK_WEBHOOK_URL = process.env.SLACK_WEBHOOK_URL;
+
+
+// PROD
+// LCD_URL = 'https://lcd.terra.dev'
+// CHAIN_ID = 'columbus-4'
+
+// Testnet
+LCD_URL = 'https://tequila-lcd.terra.dev'
+CHAIN_ID = 'tequila-0004'
+
+//contracts address prod
+// const market = 'terra1sepfj7s0aeg5967uxnfk4thzlerrsktkpelm5s'
+// const overseer = 'terra1tmnqgvg567ypvsvk6rwsga3srp7e3lg6u0elp8'
+// const bLUNA_token = 'terra1kc87mu460fwkqte29rquh4hc20m54fxwtsx7gp'
+// const custody = 'terra1ptjp2vfjrwh0j0faj9r6katm640kgjxnwwq9kn'
+// const aUST = 'terra1hzh9vpxhsk8253se0vv5jj6etdvxu3nv8z07zu'
+// const ANC_token = 'terra1897an2xux840p9lrh6py3ryankc6mspw49xse3'
+// const ANC_LP = 'terra1gecs98vcuktyfkrve9czrpgtg0m3aq586x6gzm'
+// const ANC_pool = 'terra1gm5p3ner9x9xpwugn9sp6gvhd0lwrtkyrecdn3'
+// const MIR_LP_staking = 'terra17f7zu97865jmknk7p2glqvxzhduk78772ezac5'
+// const MIR_LP = 'terra17gjf2zehfvnyjtdgua9p9ygquk6gukxe7ucgwh'
+// const terraswapblunaLunaPair = 'terra1jxazgm67et0ce260kvrpfv50acuushpjsz2y0p'
+
+// https://github.com/terra-project/use-station/blob/aeadb2fc2c73f2704c54b5e525a7a2e51daa04f4/src/post/useSwap.ts
+// swap address
+assertLimitOrderContracts = 'terra1vs9jr7pxuqwct3j29lez3pfetuu8xmq7tk3lzk'
+
+// contratcs address testnet
+const market = 'terra15dwd5mj8v59wpj0wvt233mf5efdff808c5tkal'
+const overseer = 'terra1qljxd0y3j3gk97025qvl3lgq8ygup4gsksvaxv'
+const bLUNA_token = 'terra1u0t35drzyy0mujj8rkdyzhe264uls4ug3wdp3x'
+const custody = 'terra1ltnkx0mv7lf2rca9f8w740ashu93ujughy4s7p'
+const aUST = 'terra1ajt556dpzvjwl0kl5tzku3fc3p3knkg9mkv8jl'
+const ANC_token = 'terra19nxz35c8f7t3ghdxrxherym20tux8eccar0c3k'
+const ANC_LP = 'terra1vg0qyq92ky9z9dp0j9fv5rmr2s80sg605dah6f'
+const ANC_pool = 'terra1wfvczps2865j0awnurk9m04u7wdmd6qv3fdnvz'
 const MIR_LP_staking = 'terra17f7zu97865jmknk7p2glqvxzhduk78772ezac5'
 const MIR_LP = 'terra17gjf2zehfvnyjtdgua9p9ygquk6gukxe7ucgwh'
+const terraswapblunaLunaPair = 'terra13e4jmcjnwrauvl2fnjdwex0exuzd8zrh5xk29v'
+
+// https://github.com/terra-project/use-station/blob/aeadb2fc2c73f2704c54b5e525a7a2e51daa04f4/src/post/useSwap.ts
+// swap address
+assertLimitOrderContracts = 'terra1z3sf42ywpuhxdh78rr5vyqxpaxa0dx657x5trs'
 
 
 class Repay{
@@ -29,8 +65,8 @@ class Repay{
             coinType: COIN_TYPE
         });
         const lcd = new LCDClient({
-            URL: 'https://lcd.terra.dev',
-            chainID: 'columbus-4'
+            URL: LCD_URL,
+            chainID: CHAIN_ID
         });
         this.wallet = new Wallet(lcd, key);
     }
@@ -50,8 +86,22 @@ class Repay{
             const tx = await this.wallet.createAndSignTx({msgs, fee});
             const result = await this.wallet.lcd.tx.broadcastSync(tx);    
             await this.pollingTx(result.txhash)
-            console.log('Transaction Completed\n')
+            console.log('[+] Transaction Completed! tx: %s \n', result.txhash)
+
+            // send slack notification
+            const notification = ':heavy_check_mark:  Transaction Completed!! https://finder.terra.money/tequila-0004/tx/' + result.txhash
+            const body = {text: notification};
+            
+            const response = await fetch(SLACK_WEBHOOK_URL, {
+                method: 'post',
+                body: JSON.stringify(body),
+                headers: {'Content-Type': 'application/json'}
+            });
+            // end slack
+
+
         }catch (err){
+
             console.log('Transaction Fail')
             sleep(300)
             console.log(err)
@@ -72,7 +122,18 @@ class Repay{
 
     //repay
     async repay(amount){
-        console.log('Repaying ' + (amount/1e6).toFixed(2)+'UST...')
+        console.log('[+] ACTION => Repaying ' + (amount/1e6).toFixed(2)+' UST ...')
+            // send slack notification
+            const notification = 'Repaying ' + (amount/1e6).toFixed(2)+' UST ...'
+            const body = {text: notification};
+            
+            const response = await fetch(SLACK_WEBHOOK_URL, {
+                method: 'post',
+                body: JSON.stringify(body),
+                headers: {'Content-Type': 'application/json'}
+            });
+            // end slack
+        
         let coin = new Coin('uusd', amount)
         let coins = new Coins
         coins = coins.add(coin)
@@ -90,7 +151,17 @@ class Repay{
     
     //withdraw ust from anchor deposit
     async withdraw_aUST(aust_amount){
-        console.log('Withdrawing ' + (aust_amount/1e6).toFixed(2)+'aUST...')    
+        console.log('[+] ACTION => Withdrawing ' + (aust_amount/1e6).toFixed(2)+' aUST ...')
+        // send slack notification
+        const body = {text: 'Withdrawing ' + (aust_amount/1e6).toFixed(2)+' aUST ...'};
+        
+        const response = await fetch(SLACK_WEBHOOK_URL, {
+            method: 'post',
+            body: JSON.stringify(body),
+            headers: {'Content-Type': 'application/json'}
+        });
+        // end slack
+
         let withdraw = new MsgExecuteContract(
             this.wallet.key.accAddress,
             aUST,
@@ -217,7 +288,7 @@ class Repay{
             {
                 send: {
                     amount: burnamount.toString(),
-                    contract: 'terra1jxazgm67et0ce260kvrpfv50acuushpjsz2y0p',
+                    contract: terraswapblunaLunaPair,
                     msg: inmsg
                 }
             },
@@ -232,7 +303,7 @@ class Repay{
         let receive = await fetchAPI.ust_receive_amount(swapamount)
         let swap = new MsgExecuteContract(
             this.wallet.key.accAddress,
-            'terra1vs9jr7pxuqwct3j29lez3pfetuu8xmq7tk3lzk',
+            assertLimitOrderContracts,
             {
                 assert_limit_order: {
                     offer_coin: {
@@ -483,7 +554,7 @@ async function check_option(){
 async function check_remain_UST(){
     let UST_remain = await fetchAPI.ust_balance(myAddress)
     if (UST_remain < 1000000){
-        console.log('You must have at least 1UST')
+        console.log('[Err] - You must have at least 1UST')
         return false
     }else{
         return true
@@ -513,16 +584,25 @@ async function update_state(){
     loanAmount = await fetchAPI.loan_amount(myAddress)
     percentNow = loanAmount/borrowLimit
 
-    console.log(moment().format('YYYY-MM-DD hh:mm:ss A'))
-    console.log("Up to borrow limit: " + (percentNow*100).toFixed(2) + "%\n")
+    date = moment().format('DD-MM-YYYY hh:mm:ss A')
+    borrowLimit = (percentNow*100).toFixed(2) + "%"
+
+    // console.log("Up to borrow limit: " + (percentNow*100).toFixed(2) + "%\n")
+    var options = JSON.parse(fs.readFileSync('option.txt').toString())
+    diff_for_trigger = (options.trigger_percent.split('%')[0] - borrowLimit.split('%')[0]).toFixed(2) + "%"
+
+    console.log(`[+] ${date} - Leverage => current: [${borrowLimit}], desired: [${options.target_percent}], triggering at: [${options.trigger_percent}] (diff: [${diff_for_trigger}]).`)
 
     return percentNow
 }
 
 async function getting_UST_process(UST_remain, total_needed_amount){
     for (option of get_UST_option){
+        // ignore UST_remain as its desired for fees since its not deposited at Anchor ...
+        // TODO: move to options...
+        UST_remain = 0
         await get_UST(option, total_needed_amount - UST_remain)
-        UST_remain = await fetchAPI.ust_balance(myAddress)
+        // UST_remain = await fetchAPI.ust_balance(myAddress)
         if (UST_remain * 0.99 > total_needed_amount){ // if UST_balance is more than repay amount
             break;
         }
@@ -539,36 +619,48 @@ async function main(){
     let option_check = await check_option()
     let UST_check = await check_remain_UST()
     if(option_check && UST_check){
-        while(true){
+        // while(true){
             let nowPercent = await update_state()
             if(nowPercent > trigger_percent){
                 let UST_remain = await fetchAPI.ust_balance(myAddress)
                 let total_needed_amount = await repay_amount(target_percent)
+
+                // always pay with aUST but 1st, get it off deposit 
+
+                // withf
+                UST_remain = 00000000001
                 if (UST_remain < total_needed_amount){
                     await getting_UST_process(UST_remain, total_needed_amount)
                 }
                 await sleep(1000)
-                UST_remain = await fetchAPI.ust_balance(myAddress)
-                if(Math.min(UST_remain - 3000000, total_needed_amount) > 0){
-                    await repayHandler.repay(Math.min(UST_remain - 3000000, total_needed_amount)) //3UST for gas fee
-                    nowPercent = await update_state()
-                }
                 
-                if (nowPercent > trigger_percent && instant_burn == "on"){ //if nowPercent still obove trigger_percent do instant burn
-                    await instant_burn_process(percentNow)
-                    UST_remain = await fetchAPI.ust_balance(myAddress)
-                    await repayHandler.repay(UST_remain - 3000000)
-                    nowPercent = await update_state()
-                }
+                // proceed with repay
+                await repayHandler.repay(total_needed_amount)
+                nowPercent = await update_state()
+
+                // UST_remain = await fetchAPI.ust_balance(myAddress)
+                // if(Math.min(UST_remain - 3000000, total_needed_amount) > 0){
+                //     await repayHandler.repay(Math.min(UST_remain - 3000000, total_needed_amount)) //3UST for gas fee
+                //     nowPercent = await update_state()
+                // }
+                
+                // instaburn
+                // if (nowPercent > trigger_percent && instant_burn == "on"){ //if nowPercent still obove trigger_percent do instant burn
+                //     await instant_burn_process(percentNow)
+                //     UST_remain = await fetchAPI.ust_balance(myAddress)
+                //     await repayHandler.repay(UST_remain - 3000000)
+                //     nowPercent = await update_state()
+                // }
+
             }else if(nowPercent < belowTrigger){
                 let ust_amount = parseInt((target_percent - percentNow) / percentNow * loanAmount)
                 await repayHandler.borrow_ust(ust_amount)
             }
             
 
-
-            await sleep(60000)
-        }
+            
+            // await sleep(60000) // run every 30 seconds (60000 == minute)
+        // }
     }
 }
 

@@ -1,0 +1,12 @@
+<html>
+    <head>
+        <title>{{ title }}</title>
+    </head>
+    <body>
+        <ul>
+        {% for line in buffer_list: %}
+        <li>{{ line }}</li>
+	{% endfor %}
+	</ul>
+    </body>
+</html>
