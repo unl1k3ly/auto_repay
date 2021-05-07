@@ -5,8 +5,8 @@ from flask import Response, render_template
 import json
 
 
-
 app = Flask(__name__)
+
 
 @app.route('/')
 def tail():
@@ -17,9 +17,8 @@ def tail():
 
         for line in iter(process.stdout.readline, b''):
             l = line.decode('utf-8')
-            line = l.split()
+            line = l.strip()
             buffer.append(line)
-
 
         return render_template('index.html', title='Welcome', buffer_list=buffer)
         # return Response(json.dumps(buffer),  mimetype='application/json')

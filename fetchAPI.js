@@ -2,15 +2,15 @@ const fetch = require('node-fetch');
 
 
 // PROD
-// LCD_URL = 'https://lcd.terra.dev'
-// CHAIN_ID = 'columbus-4'
+LCD_URL = 'https://lcd.terra.dev'
+CHAIN_ID = 'columbus-4'
 
 // Testnet
-LCD_URL = 'https://tequila-lcd.terra.dev'
-CHAIN_ID = 'tequila-0004'
+// LCD_URL = 'https://tequila-lcd.terra.dev'
+// CHAIN_ID = 'tequila-0004'
 
 
-getAPI = async function (leftover, baseURL = 'https://tequila-lcd.terra.dev/'){
+getAPI = async function (leftover, baseURL = 'https://lcd.terra.dev/'){
     if (leftover){
         let getted = false
         while(!getted){
@@ -45,26 +45,26 @@ async function getHeight(){
 }
 
 // mainnet 
-// const overseer = 'terra1tmnqgvg567ypvsvk6rwsga3srp7e3lg6u0elp8'
-// const market = 'terra1sepfj7s0aeg5967uxnfk4thzlerrsktkpelm5s'
-// const aUST = 'terra1hzh9vpxhsk8253se0vv5jj6etdvxu3nv8z07zu'
-// const ANC_token = 'terra1897an2xux840p9lrh6py3ryankc6mspw49xse3'
-// const ANC_LP = 'terra1gecs98vcuktyfkrve9czrpgtg0m3aq586x6gzm'
-// const ANC_pool = 'terra1gm5p3ner9x9xpwugn9sp6gvhd0lwrtkyrecdn3'
-// const MIR_LP_staking = 'terra17f7zu97865jmknk7p2glqvxzhduk78772ezac5'
+const overseer = 'terra1tmnqgvg567ypvsvk6rwsga3srp7e3lg6u0elp8'
+const market = 'terra1sepfj7s0aeg5967uxnfk4thzlerrsktkpelm5s'
+const aUST = 'terra1hzh9vpxhsk8253se0vv5jj6etdvxu3nv8z07zu'
+const ANC_token = 'terra1897an2xux840p9lrh6py3ryankc6mspw49xse3'
+const ANC_LP = 'terra1gecs98vcuktyfkrve9czrpgtg0m3aq586x6gzm'
+const ANC_pool = 'terra1gm5p3ner9x9xpwugn9sp6gvhd0lwrtkyrecdn3'
+const MIR_LP_staking = 'terra17f7zu97865jmknk7p2glqvxzhduk78772ezac5'
 
 // testnet
-const market = 'terra15dwd5mj8v59wpj0wvt233mf5efdff808c5tkal'
-const overseer = 'terra1qljxd0y3j3gk97025qvl3lgq8ygup4gsksvaxv'
-const bLUNA_token = 'terra1u0t35drzyy0mujj8rkdyzhe264uls4ug3wdp3x'
-const custody = 'terra1ltnkx0mv7lf2rca9f8w740ashu93ujughy4s7p'
-const aUST = 'terra1ajt556dpzvjwl0kl5tzku3fc3p3knkg9mkv8jl'
-const ANC_token = 'terra19nxz35c8f7t3ghdxrxherym20tux8eccar0c3k'
-const ANC_LP = 'terra1vg0qyq92ky9z9dp0j9fv5rmr2s80sg605dah6f'
-const ANC_pool = 'terra1wfvczps2865j0awnurk9m04u7wdmd6qv3fdnvz'
-const MIR_LP_staking = 'terra17f7zu97865jmknk7p2glqvxzhduk78772ezac5'
-const MIR_LP = 'terra17gjf2zehfvnyjtdgua9p9ygquk6gukxe7ucgwh'
-const terraswapblunaLunaPair = 'terra13e4jmcjnwrauvl2fnjdwex0exuzd8zrh5xk29v'
+// const market = 'terra15dwd5mj8v59wpj0wvt233mf5efdff808c5tkal'
+// const overseer = 'terra1qljxd0y3j3gk97025qvl3lgq8ygup4gsksvaxv'
+// const bLUNA_token = 'terra1u0t35drzyy0mujj8rkdyzhe264uls4ug3wdp3x'
+// const custody = 'terra1ltnkx0mv7lf2rca9f8w740ashu93ujughy4s7p'
+// const aUST = 'terra1ajt556dpzvjwl0kl5tzku3fc3p3knkg9mkv8jl'
+// const ANC_token = 'terra19nxz35c8f7t3ghdxrxherym20tux8eccar0c3k'
+// const ANC_LP = 'terra1vg0qyq92ky9z9dp0j9fv5rmr2s80sg605dah6f'
+// const ANC_pool = 'terra1wfvczps2865j0awnurk9m04u7wdmd6qv3fdnvz'
+// const MIR_LP_staking = 'terra17f7zu97865jmknk7p2glqvxzhduk78772ezac5'
+// const MIR_LP = 'terra17gjf2zehfvnyjtdgua9p9ygquk6gukxe7ucgwh'
+// const terraswapblunaLunaPair = 'terra13e4jmcjnwrauvl2fnjdwex0exuzd8zrh5xk29v'
 
 exports.borrow_limit = async function(walletAdd){
     let borrow_limit = await getAPI('wasm/contracts/' + overseer + '/store?query_msg={"borrow_limit":{"borrower": "'+ walletAdd +'"}}')
