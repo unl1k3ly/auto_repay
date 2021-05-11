@@ -11,55 +11,52 @@ const COIN_TYPE = 330;
 
 const SLACK_WEBHOOK_URL = process.env.SLACK_WEBHOOK_URL;
 
+const NETWORK = process.env.NETWORK;
+
+if (NETWORK == 'MAINNET') {
+
+    var LCD_URL = 'https://lcd.terra.dev'
+    var CHAIN_ID = 'columbus-4'
+
+    var market = 'terra1sepfj7s0aeg5967uxnfk4thzlerrsktkpelm5s'
+    var overseer = 'terra1tmnqgvg567ypvsvk6rwsga3srp7e3lg6u0elp8'
+    var bLUNA_token = 'terra1kc87mu460fwkqte29rquh4hc20m54fxwtsx7gp'
+    var custody = 'terra1ptjp2vfjrwh0j0faj9r6katm640kgjxnwwq9kn'
+    var aUST = 'terra1hzh9vpxhsk8253se0vv5jj6etdvxu3nv8z07zu'
+    var ANC_token = 'terra1897an2xux840p9lrh6py3ryankc6mspw49xse3'
+    var ANC_LP = 'terra1gecs98vcuktyfkrve9czrpgtg0m3aq586x6gzm'
+    var ANC_pool = 'terra1gm5p3ner9x9xpwugn9sp6gvhd0lwrtkyrecdn3'
+    var MIR_LP_staking = 'terra17f7zu97865jmknk7p2glqvxzhduk78772ezac5'
+    var MIR_LP = 'terra17gjf2zehfvnyjtdgua9p9ygquk6gukxe7ucgwh'
+    var terraswapblunaLunaPair = 'terra1jxazgm67et0ce260kvrpfv50acuushpjsz2y0p'
+
     // https://github.com/terra-project/use-station/blob/aeadb2fc2c73f2704c54b5e525a7a2e51daa04f4/src/post/useSwap.ts
     // swap address
-    assertLimitOrderContracts = 'terra1z3sf42ywpuhxdh78rr5vyqxpaxa0dx657x5trs'
+    var assertLimitOrderContracts = 'terra1vs9jr7pxuqwct3j29lez3pfetuu8xmq7tk3lzk'
+    
+    
+} else {
+    // Testnet
 
-// PROD
-LCD_URL = 'https://lcd.terra.dev'
-CHAIN_ID = 'columbus-4'
+    var LCD_URL = 'https://tequila-lcd.terra.dev'
+    var CHAIN_ID = 'tequila-0004'
 
-// Testnet
-// LCD_URL = 'https://tequila-lcd.terra.dev'
-// CHAIN_ID = 'tequila-0004'
+    var market = 'terra15dwd5mj8v59wpj0wvt233mf5efdff808c5tkal'
+    var overseer = 'terra1qljxd0y3j3gk97025qvl3lgq8ygup4gsksvaxv'
+    var bLUNA_token = 'terra1u0t35drzyy0mujj8rkdyzhe264uls4ug3wdp3x'
+    var custody = 'terra1ltnkx0mv7lf2rca9f8w740ashu93ujughy4s7p'
+    var aUST = 'terra1ajt556dpzvjwl0kl5tzku3fc3p3knkg9mkv8jl'
+    var ANC_token = 'terra19nxz35c8f7t3ghdxrxherym20tux8eccar0c3k'
+    var ANC_LP = 'terra1vg0qyq92ky9z9dp0j9fv5rmr2s80sg605dah6f'
+    var ANC_pool = 'terra1wfvczps2865j0awnurk9m04u7wdmd6qv3fdnvz'
+    var MIR_LP_staking = 'terra17f7zu97865jmknk7p2glqvxzhduk78772ezac5'
+    var MIR_LP = 'terra17gjf2zehfvnyjtdgua9p9ygquk6gukxe7ucgwh'
+    var terraswapblunaLunaPair = 'terra13e4jmcjnwrauvl2fnjdwex0exuzd8zrh5xk29v'
+    // https://github.com/terra-project/use-station/blob/aeadb2fc2c73f2704c54b5e525a7a2e51daa04f4/src/post/useSwap.ts
+    // swap address
+    var assertLimitOrderContracts = 'terra1z3sf42ywpuhxdh78rr5vyqxpaxa0dx657x5trs'
 
-//contracts address prod
-const market = 'terra1sepfj7s0aeg5967uxnfk4thzlerrsktkpelm5s'
-const overseer = 'terra1tmnqgvg567ypvsvk6rwsga3srp7e3lg6u0elp8'
-const bLUNA_token = 'terra1kc87mu460fwkqte29rquh4hc20m54fxwtsx7gp'
-const custody = 'terra1ptjp2vfjrwh0j0faj9r6katm640kgjxnwwq9kn'
-const aUST = 'terra1hzh9vpxhsk8253se0vv5jj6etdvxu3nv8z07zu'
-const ANC_token = 'terra1897an2xux840p9lrh6py3ryankc6mspw49xse3'
-const ANC_LP = 'terra1gecs98vcuktyfkrve9czrpgtg0m3aq586x6gzm'
-const ANC_pool = 'terra1gm5p3ner9x9xpwugn9sp6gvhd0lwrtkyrecdn3'
-const MIR_LP_staking = 'terra17f7zu97865jmknk7p2glqvxzhduk78772ezac5'
-const MIR_LP = 'terra17gjf2zehfvnyjtdgua9p9ygquk6gukxe7ucgwh'
-const terraswapblunaLunaPair = 'terra1jxazgm67et0ce260kvrpfv50acuushpjsz2y0p'
-
-// https://github.com/terra-project/use-station/blob/aeadb2fc2c73f2704c54b5e525a7a2e51daa04f4/src/post/useSwap.ts
-// swap address
-assertLimitOrderContracts = 'terra1vs9jr7pxuqwct3j29lez3pfetuu8xmq7tk3lzk'
-
-
-
-// contratcs address testnet
-
-
-// const market = 'terra15dwd5mj8v59wpj0wvt233mf5efdff808c5tkal'
-// const overseer = 'terra1qljxd0y3j3gk97025qvl3lgq8ygup4gsksvaxv'
-// const bLUNA_token = 'terra1u0t35drzyy0mujj8rkdyzhe264uls4ug3wdp3x'
-// const custody = 'terra1ltnkx0mv7lf2rca9f8w740ashu93ujughy4s7p'
-// const aUST = 'terra1ajt556dpzvjwl0kl5tzku3fc3p3knkg9mkv8jl'
-// const ANC_token = 'terra19nxz35c8f7t3ghdxrxherym20tux8eccar0c3k'
-// const ANC_LP = 'terra1vg0qyq92ky9z9dp0j9fv5rmr2s80sg605dah6f'
-// const ANC_pool = 'terra1wfvczps2865j0awnurk9m04u7wdmd6qv3fdnvz'
-// const MIR_LP_staking = 'terra17f7zu97865jmknk7p2glqvxzhduk78772ezac5'
-// const MIR_LP = 'terra17gjf2zehfvnyjtdgua9p9ygquk6gukxe7ucgwh'
-// const terraswapblunaLunaPair = 'terra13e4jmcjnwrauvl2fnjdwex0exuzd8zrh5xk29v'
-
-// https://github.com/terra-project/use-station/blob/aeadb2fc2c73f2704c54b5e525a7a2e51daa04f4/src/post/useSwap.ts
-// swap address
-// assertLimitOrderContracts = 'terra1z3sf42ywpuhxdh78rr5vyqxpaxa0dx657x5trs'
+}
 
 
 class Repay{
@@ -182,7 +179,7 @@ class Repay{
             new Coins
         )
         await this.execute([withdraw], 'ANC');
-        await sleep(3000);            
+        await sleep(4000);            
 
     }
 

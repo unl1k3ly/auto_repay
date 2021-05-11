@@ -20,13 +20,18 @@ def tail():
             line = l.strip()
             buffer.append(line)
 
-        return render_template('index.html', title='Welcome', buffer_list=buffer)
-        # return Response(json.dumps(buffer),  mimetype='application/json')
+        # get last "left to trigger"
+        if 'left until trigger' in buffer[-1]:
+            page_title = buffer[-1].split(':')[-1].strip().strip(').')
 
+        if not page_title:
+            page_title = 'Err'
+
+        return render_template('index.html', title=page_title, buffer_list=buffer)
+        # return Response(json.dumps(buffer),  mimetype='application/json')
 
     else:
         return "Could not read console.log"
-
 
 
 if __name__ == '__main__':
