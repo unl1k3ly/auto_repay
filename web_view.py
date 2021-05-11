@@ -20,11 +20,10 @@ def tail():
             line = l.strip()
             buffer.append(line)
 
-        # get last "left to trigger"
+        # get the last "left to trigger"
         if 'left until trigger' in buffer[-1]:
             page_title = buffer[-1].split(':')[-1].strip().strip(').')
-
-        if not page_title:
+        else:
             page_title = 'Err'
 
         return render_template('index.html', title=page_title, buffer_list=buffer)
